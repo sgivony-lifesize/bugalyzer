@@ -1,0 +1,117 @@
+.canvas {
+  margin: 30px;
+  font-family: Arial;
+  float: left;
+  width: 100%;
+}
+.graph {
+  float: left;
+  padding: 10px;
+}
+.graph_6 {
+  width: 100%;
+  float: left;
+}
+.graph_3 {
+  float: left;
+}
+.entity {
+  border: 1px solid black;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  float: left;
+  text-align: center;
+  background: lemonchiffon;
+}
+.content {
+  padding: 10px;
+}
+.version {
+  padding-bottom: 10px;
+}
+.legs {
+  padding: 0px;
+}
+.leg {
+  border: 1px solid black;
+  border-radius: 5px;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  background: #CCFF66;
+  padding: 5px;
+  float: left;
+  text-align: center;
+  margin: 5px;
+}
+#node1IB {
+  background: #9999FF;
+}
+#node1OB {
+  background: #CC3399;
+}
+#node2IB {
+  background: #FF9933;
+}
+#node2OB {
+  background: #00CCCC;
+}
+.link {
+  border-bottom: 1px solid black;
+  float: left;
+  font-size: 14px;
+  padding: 5px 10px;
+}
+.title {
+  border: 0px solid black;
+  border-radius-top: 5px;
+  background-color: black;
+  color: white;
+  font-weight: bold;
+  padding: 5px 10px;
+  -webkit-border-radius-top: 5px;
+  -moz-border-radius-top: 5px;
+}
+.legTitle {
+  font-weight: bold;
+}
+.nodeIp {
+  font-family: monospace;
+  font-size: 10px;
+}
+.sipviewOutput {
+  white-space: pre;
+  font-family: monospace;
+  padding: 20px;
+}
+
+
+
+
+
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dashed black;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: auto;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+
+    position: absolute;
+    z-index: 1;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    font-family: monospace;
+}
+

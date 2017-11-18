@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Call from CALLER_EXTENSION</title>
+  <!--link rel="stylesheet" href="/home/shai/bugalyzer/bugalyzer.css"-->
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <style>
+STYLE_FROM_CSS_FILE
+  </style>
+</head>
+<body>
+<div class="canvas" id="canvas1">
+  <div class="entity" id="caller">
+    <div class="field title">CALLER_NAME</div>
+    <div class="content">
+      <div class="field version" id="client_name">CALLER_CLIENT</div>
+      <div class="field" id="ext">CALLER_EXTENSION</div>
+      <div class="field" id="caller_ip">CALLER_IP</div>
+    </div>
+  </div>
+  <div class="link tooltip" id="node1Link">CALL_ID_1_12DIGITS<span class="tooltiptext">CALL_ID_1_TOOLTIP</span></div>
+  <div class="entity" id="node1">
+    <div class="field title">NODE1_NAME</div>
+    <div class="content">
+      <div class="field version" id="node1_version">NODE1_VERSION</div>
+      <div class="field nodeIp" id="ipExt">NODE1_IP_EXT</div>
+      <div class="field nodeIp" id="ipInt">NODE1_IP_INT</div>
+      <div class="legs">
+        <div class="leg" id="node1IB">
+          <div class="legTitle">IB</div>
+          <div class="legName tooltip">NODE1_IB_4DIGITS<span class="tooltiptext">NODE1_IB_TOOLTIP</span></div>
+        </div>
+        <div class="leg" id="node1OB">
+          <div class="legTitle">OB</div>
+          <div class="legName tooltip">NODE1_OB_4DIGITS<span class="tooltiptext">NODE1_OB_TOOLTIP</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="link tooltip" id="nodesLink">CALL_ID_2_12DIGITS<span class="tooltiptext">CALL_ID_2_TOOLTIP</span></div>
+  <div class="entity" id="node2">
+    <div class="field title">NODE2_NAME</div>
+    <div class="content">
+      <div class="field version" id="node2_version">NODE2_VERSION</div>
+      <div class="field nodeIp" id="ipExt">NODE2_IP_EXT</div>
+      <div class="field nodeIp" id="ipInt">NODE2_IP_INT</div>
+      <div class="legs">
+        <div class="leg" id="node2IB">
+          <div class="legTitle">IB</div>
+          <div class="legName tooltip">NODE2_IB_4DIGITS<span class="tooltiptext">NODE2_IB_TOOLTIP</span></div>
+        </div>
+        <div class="leg" id="node2OB">
+          <div class="legTitle">OB</div>
+          <div class="legName tooltip">NODE2_OB_4DIGITS<span class="tooltiptext">NODE2_OB_TOOLTIP</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="link tooltip" id="node1Link">CALL_ID_3_12DIGITS<span class="tooltiptext">CALL_ID_3_TOOLTIP</span></div>
+  <div class="entity" id="callee">
+    <div class="field title">CALLEE_NAME</div>
+    <div class="content">
+      <div class="field version" id="client_name">CALLEE_CLIENT</div>
+      <div class="field" id="ext">CALLEE_EXTENSION</div>
+      <div class="field" id="callee_ip">CALLEE_IP</div>
+    </div>
+  </div>
+</div>
+
+
+<div class="w3-bar w3-black">
+  <button class="w3-bar-item w3-button tablink w3-red" onclick="openTab(event,'Graphs')">Graphs</button>
+  <button class="w3-bar-item w3-button tablink"        onclick="openTab(event,'SIP')">SIP</button>
+</div>
+
+<!-- 4 series together on same graph -->
+<!-- Audio -->
+<div id="Graphs" class="w3-container w3-border tab">
+  <div class="graph_6">
+    <div class="graph_3">
+      <div class="graph">
+        <img src="http://chart.apis.google.com/chart?cht=lc&chd=t:AUDIO_BW_LTR_DATA_RX1|AUDIO_BW_LTR_DATA_TX1|AUDIO_BW_LTR_DATA_RX2|AUDIO_BW_LTR_DATA_TX2&&chs=200x100&chtt=AUDIO_BW_LTR_TITLE&chco=9999FF,CC3399,FF9933,00CCCC&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,AUDIO_BW_LTR_LINES_NUM|1,AUDIO_BW_LTR_MIN,AUDIO_BW_LTR_MAX,AUDIO_BW_LTR_JUMP&chds=AUDIO_BW_LTR_MIN,AUDIO_BW_LTR_MAX">
+      </div>
+
+      <div class="graph">
+        <img src="http://chart.apis.google.com/chart?cht=lc&chd=t:AUDIO_PACKETS_LTR_DATA_RX1|AUDIO_PACKETS_LTR_DATA_TX1|AUDIO_PACKETS_LTR_DATA_RX2|AUDIO_PACKETS_LTR_DATA_TX2&&chs=200x100&chtt=AUDIO_PACKETS_LTR_TITLE&chco=9999FF,CC3399,FF9933,00CCCC&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,AUDIO_PACKETS_LTR_LINES_NUM|1,AUDIO_PACKETS_LTR_MIN,AUDIO_PACKETS_LTR_MAX,AUDIO_PACKETS_LTR_JUMP&chds=AUDIO_PACKETS_LTR_MIN,AUDIO_PACKETS_LTR_MAX">
+      </div>
+
+      <div class="graph">
+        <img src="http://chart.apis.google.com/chart?cht=lc&chd=t:AUDIO_LOSS_LTR_DATA_RX1|AUDIO_LOSS_LTR_DATA_TX1|AUDIO_LOSS_LTR_DATA_RX2|AUDIO_LOSS_LTR_DATA_TX2&&chs=200x100&chtt=AUDIO_LOSS_LTR_TITLE&chco=9999FF,CC3399,FF9933,00CCCC&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,AUDIO_LOSS_LTR_LINES_NUM|1,AUDIO_LOSS_LTR_MIN,AUDIO_LOSS_LTR_MAX,AUDIO_LOSS_LTR_JUMP&chds=AUDIO_LOSS_LTR_MIN,AUDIO_LOSS_LTR_MAX">
+      </div>
+    </div>
+    <div class="graph_3">
+      <div class="graph">
+        <img src="http://chart.apis.google.com/chart?cht=lc&chd=t:AUDIO_BW_RTL_DATA_RX1|AUDIO_BW_RTL_DATA_TX1|AUDIO_BW_RTL_DATA_RX2|AUDIO_BW_RTL_DATA_TX2&&chs=200x100&chtt=AUDIO_BW_RTL_TITLE&chco=9999FF,CC3399,FF9933,00CCCC&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,AUDIO_BW_RTL_LINES_NUM|1,AUDIO_BW_RTL_MIN,AUDIO_BW_RTL_MAX,AUDIO_BW_RTL_JUMP&chds=AUDIO_BW_RTL_MIN,AUDIO_BW_RTL_MAX">
+      </div>
+
+      <div class="graph">
+        <img src="http://chart.apis.google.com/chart?cht=lc&chd=t:AUDIO_PACKETS_RTL_DATA_RX1|AUDIO_PACKETS_RTL_DATA_TX1|AUDIO_PACKETS_RTL_DATA_RX2|AUDIO_PACKETS_RTL_DATA_TX2&&chs=200x100&chtt=AUDIO_PACKETS_RTL_TITLE&chco=9999FF,CC3399,FF9933,00CCCC&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,AUDIO_PACKETS_RTL_LINES_NUM|1,AUDIO_PACKETS_RTL_MIN,AUDIO_PACKETS_RTL_MAX,AUDIO_PACKETS_RTL_JUMP&chds=AUDIO_PACKETS_RTL_MIN,AUDIO_PACKETS_RTL_MAX">
+      </div>
+
+      <div class="graph">
+        <img src="http://chart.apis.google.com/chart?cht=lc&chd=t:AUDIO_LOSS_RTL_DATA_RX1|AUDIO_LOSS_RTL_DATA_TX1|AUDIO_LOSS_RTL_DATA_RX2|AUDIO_LOSS_RTL_DATA_TX2&&chs=200x100&chtt=AUDIO_LOSS_RTL_TITLE&chco=9999FF,CC3399,FF9933,00CCCC&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,AUDIO_LOSS_RTL_LINES_NUM|1,AUDIO_LOSS_RTL_MIN,AUDIO_LOSS_RTL_MAX,AUDIO_LOSS_RTL_JUMP&chds=AUDIO_LOSS_RTL_MIN,AUDIO_LOSS_RTL_MAX">
+      </div>
+    </div>
+  </div>
+
+  <!-- Video -->
+  <div class="graph_6">
+    <div class="graph_3">
+      <div class="graph">
+        <img src="http://chart.apis.google.com/chart?cht=lc&chd=t:VIDEO_BW_LTR_DATA_RX1|VIDEO_BW_LTR_DATA_TX1|VIDEO_BW_LTR_DATA_RX2|VIDEO_BW_LTR_DATA_TX2&&chs=200x100&chtt=VIDEO_BW_LTR_TITLE&chco=9999FF,CC3399,FF9933,00CCCC&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,VIDEO_BW_LTR_LINES_NUM|1,VIDEO_BW_LTR_MIN,VIDEO_BW_LTR_MAX,VIDEO_BW_LTR_JUMP&chds=VIDEO_BW_LTR_MIN,VIDEO_BW_LTR_MAX">
+      </div>
+
+      <div class="graph">
+        <img src="http://chart.apis.google.com/chart?cht=lc&chd=t:VIDEO_PACKETS_LTR_DATA_RX1|VIDEO_PACKETS_LTR_DATA_TX1|VIDEO_PACKETS_LTR_DATA_RX2|VIDEO_PACKETS_LTR_DATA_TX2&&chs=200x100&chtt=VIDEO_PACKETS_LTR_TITLE&chco=9999FF,CC3399,FF9933,00CCCC&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,VIDEO_PACKETS_LTR_LINES_NUM|1,VIDEO_PACKETS_LTR_MIN,VIDEO_PACKETS_LTR_MAX,VIDEO_PACKETS_LTR_JUMP&chds=VIDEO_PACKETS_LTR_MIN,VIDEO_PACKETS_LTR_MAX">
+      </div>
+
+      <div class="graph">
+        <img src="http://chart.apis.google.com/chart?cht=lc&chd=t:VIDEO_LOSS_LTR_DATA_RX1|VIDEO_LOSS_LTR_DATA_TX1|VIDEO_LOSS_LTR_DATA_RX2|VIDEO_LOSS_LTR_DATA_TX2&&chs=200x100&chtt=VIDEO_LOSS_LTR_TITLE&chco=9999FF,CC3399,FF9933,00CCCC&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,VIDEO_LOSS_LTR_LINES_NUM|1,VIDEO_LOSS_LTR_MIN,VIDEO_LOSS_LTR_MAX,VIDEO_LOSS_LTR_JUMP&chds=VIDEO_LOSS_LTR_MIN,VIDEO_LOSS_LTR_MAX">
+      </div>
+    </div>
+    <div class="graph_3">
+      <div class="graph">
+        <img src="http://chart.apis.google.com/chart?cht=lc&chd=t:VIDEO_BW_RTL_DATA_RX1|VIDEO_BW_RTL_DATA_TX1|VIDEO_BW_RTL_DATA_RX2|VIDEO_BW_RTL_DATA_TX2&&chs=200x100&chtt=VIDEO_BW_RTL_TITLE&chco=9999FF,CC3399,FF9933,00CCCC&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,VIDEO_BW_RTL_LINES_NUM|1,VIDEO_BW_RTL_MIN,VIDEO_BW_RTL_MAX,VIDEO_BW_RTL_JUMP&chds=VIDEO_BW_RTL_MIN,VIDEO_BW_RTL_MAX">
+      </div>
+
+      <div class="graph">
+        <img src="http://chart.apis.google.com/chart?cht=lc&chd=t:VIDEO_PACKETS_RTL_DATA_RX1|VIDEO_PACKETS_RTL_DATA_TX1|VIDEO_PACKETS_RTL_DATA_RX2|VIDEO_PACKETS_RTL_DATA_TX2&&chs=200x100&chtt=VIDEO_PACKETS_RTL_TITLE&chco=9999FF,CC3399,FF9933,00CCCC&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,VIDEO_PACKETS_RTL_LINES_NUM|1,VIDEO_PACKETS_RTL_MIN,VIDEO_PACKETS_RTL_MAX,VIDEO_PACKETS_RTL_JUMP&chds=VIDEO_PACKETS_RTL_MIN,VIDEO_PACKETS_RTL_MAX">
+      </div>
+
+      <div class="graph">
+        <img src="http://chart.apis.google.com/chart?cht=lc&chd=t:VIDEO_LOSS_RTL_DATA_RX1|VIDEO_LOSS_RTL_DATA_TX1|VIDEO_LOSS_RTL_DATA_RX2|VIDEO_LOSS_RTL_DATA_TX2&&chs=200x100&chtt=VIDEO_LOSS_RTL_TITLE&chco=9999FF,CC3399,FF9933,00CCCC&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,VIDEO_LOSS_RTL_LINES_NUM|1,VIDEO_LOSS_RTL_MIN,VIDEO_LOSS_RTL_MAX,VIDEO_LOSS_RTL_JUMP&chds=VIDEO_LOSS_RTL_MIN,VIDEO_LOSS_RTL_MAX">
+      </div>
+    </div>
+  </div>
+
+  <!-- PRESENTATION -->
+  <div class="graph_6">
+    <div class="graph_3">
+      <div class="graph">
+        <img src="http://chart.apis.google.com/chart?cht=lc&chd=t:PRESE_BW_LTR_DATA_RX1|PRESE_BW_LTR_DATA_TX1|PRESE_BW_LTR_DATA_RX2|PRESE_BW_LTR_DATA_TX2&&chs=200x100&chtt=PRESE_BW_LTR_TITLE&chco=9999FF,CC3399,FF9933,00CCCC&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,PRESE_BW_LTR_LINES_NUM|1,PRESE_BW_LTR_MIN,PRESE_BW_LTR_MAX,PRESE_BW_LTR_JUMP&chds=PRESE_BW_LTR_MIN,PRESE_BW_LTR_MAX">
+      </div>
+
+      <div class="graph">
+        <img src="http://chart.apis.google.com/chart?cht=lc&chd=t:PRESE_PACKETS_LTR_DATA_RX1|PRESE_PACKETS_LTR_DATA_TX1|PRESE_PACKETS_LTR_DATA_RX2|PRESE_PACKETS_LTR_DATA_TX2&&chs=200x100&chtt=PRESE_PACKETS_LTR_TITLE&chco=9999FF,CC3399,FF9933,00CCCC&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,PRESE_PACKETS_LTR_LINES_NUM|1,PRESE_PACKETS_LTR_MIN,PRESE_PACKETS_LTR_MAX,PRESE_PACKETS_LTR_JUMP&chds=PRESE_PACKETS_LTR_MIN,PRESE_PACKETS_LTR_MAX">
+      </div>
+
+      <div class="graph">
+        <img src="http://chart.apis.google.com/chart?cht=lc&chd=t:PRESE_LOSS_LTR_DATA_RX1|PRESE_LOSS_LTR_DATA_TX1|PRESE_LOSS_LTR_DATA_RX2|PRESE_LOSS_LTR_DATA_TX2&&chs=200x100&chtt=PRESE_LOSS_LTR_TITLE&chco=9999FF,CC3399,FF9933,00CCCC&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,PRESE_LOSS_LTR_LINES_NUM|1,PRESE_LOSS_LTR_MIN,PRESE_LOSS_LTR_MAX,PRESE_LOSS_LTR_JUMP&chds=PRESE_LOSS_LTR_MIN,PRESE_LOSS_LTR_MAX">
+      </div>
+    </div>
+    <div class="graph_3">
+      <div class="graph">
+        <img src="http://chart.apis.google.com/chart?cht=lc&chd=t:PRESE_BW_RTL_DATA_RX1|PRESE_BW_RTL_DATA_TX1|PRESE_BW_RTL_DATA_RX2|PRESE_BW_RTL_DATA_TX2&&chs=200x100&chtt=PRESE_BW_RTL_TITLE&chco=9999FF,CC3399,FF9933,00CCCC&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,PRESE_BW_RTL_LINES_NUM|1,PRESE_BW_RTL_MIN,PRESE_BW_RTL_MAX,PRESE_BW_RTL_JUMP&chds=PRESE_BW_RTL_MIN,PRESE_BW_RTL_MAX">
+      </div>
+
+      <div class="graph">
+        <img src="http://chart.apis.google.com/chart?cht=lc&chd=t:PRESE_PACKETS_RTL_DATA_RX1|PRESE_PACKETS_RTL_DATA_TX1|PRESE_PACKETS_RTL_DATA_RX2|PRESE_PACKETS_RTL_DATA_TX2&&chs=200x100&chtt=PRESE_PACKETS_RTL_TITLE&chco=9999FF,CC3399,FF9933,00CCCC&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,PRESE_PACKETS_RTL_LINES_NUM|1,PRESE_PACKETS_RTL_MIN,PRESE_PACKETS_RTL_MAX,PRESE_PACKETS_RTL_JUMP&chds=PRESE_PACKETS_RTL_MIN,PRESE_PACKETS_RTL_MAX">
+      </div>
+
+      <div class="graph">
+        <img src="http://chart.apis.google.com/chart?cht=lc&chd=t:PRESE_LOSS_RTL_DATA_RX1|PRESE_LOSS_RTL_DATA_TX1|PRESE_LOSS_RTL_DATA_RX2|PRESE_LOSS_RTL_DATA_TX2&&chs=200x100&chtt=PRESE_LOSS_RTL_TITLE&chco=9999FF,CC3399,FF9933,00CCCC&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,PRESE_LOSS_RTL_LINES_NUM|1,PRESE_LOSS_RTL_MIN,PRESE_LOSS_RTL_MAX,PRESE_LOSS_RTL_JUMP&chds=PRESE_LOSS_RTL_MIN,PRESE_LOSS_RTL_MAX">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- 2 series together on same graph -->
+<!--
+<img src="http://chart.apis.google.com/chart?cht=lc&chd=t:AUDIO_BW_DATA_RX|AUDIO_BW_DATA_TX&&chs=150x70&chtt=AUDIO_BW_TITLE&chdl=RX|TX&chco=9999FF,CC3399&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,30,0|1,AUDIO_BW_MIN,AUDIO_BW_MAX,AUDIO_BW_JUMP&chds=AUDIO_BW_MIN,AUDIO_BW_MAX">
+-->
+
+<!-- 1 serie only on same graph -->
+<!--
+<img src="http://chart.apis.google.com/chart?cht=lc&chd=t:AUDIO1_TX_BW_DATA&&chs=150x70&chtt=AUDIO1_TX_BW_TITLE&chco=CC3399&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,30,0|1,AUDIO1_TX_BW_MIN,AUDIO1_TX_BW_MAX,AUDIO1_TX_BW_JUMP&chds=AUDIO1_TX_BW_MIN,AUDIO1_TX_BW_MAX">
+<img src="http://chart.apis.google.com/chart?cht=lc&chd=t:VIDEO1_TX_BW_DATA&&chs=150x70&chtt=VIDEO1_TX_BW_TITLE&chco=CC3399&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,30,0|1,VIDEO1_TX_BW_MIN,VIDEO1_TX_BW_MAX,VIDEO1_TX_BW_JUMP&chds=VIDEO1_TX_BW_MIN,VIDEO1_TX_BW_MAX">
+<img src="http://chart.apis.google.com/chart?cht=lc&chd=t:PRES1_TX_BW_DATA&&chs=150x70&chtt=PRES1_TX_BW_TITLE&chco=CC3399&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,30,0|1,PRES1_TX_BW_MIN,PRES1_TX_BW_MAX,PRES1_TX_BW_JUMP&chds=PRES1_TX_BW_MIN,PRES1_TX_BW_MAX">
+<img src="http://chart.apis.google.com/chart?cht=lc&chd=t:AUDIO1_RX_BW_DATA&&chs=150x70&chtt=AUDIO1_RX_BW_TITLE&chco=CC3399&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,30,0|1,AUDIO1_RX_BW_MIN,AUDIO1_RX_BW_MAX,AUDIO1_RX_BW_JUMP&chds=AUDIO1_RX_BW_MIN,AUDIO1_RX_BW_MAX">
+<img src="http://chart.apis.google.com/chart?cht=lc&chd=t:VIDEO1_RX_BW_DATA&&chs=150x70&chtt=VIDEO1_RX_BW_TITLE&chco=CC3399&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,30,0|1,VIDEO1_RX_BW_MIN,VIDEO1_RX_BW_MAX,VIDEO1_RX_BW_JUMP&chds=VIDEO1_RX_BW_MIN,VIDEO1_RX_BW_MAX">
+<img src="http://chart.apis.google.com/chart?cht=lc&chd=t:PRES1_RX_BW_DATA&&chs=150x70&chtt=PRES1_RX_BW_TITLE&chco=CC3399&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,30,0|1,PRES1_RX_BW_MIN,PRES1_RX_BW_MAX,PRES1_RX_BW_JUMP&chds=PRES1_RX_BW_MIN,PRES1_RX_BW_MAX">
+
+<img src="http://chart.apis.google.com/chart?cht=lc&chd=t:AUDIO2_TX_BW_DATA&&chs=150x70&chtt=AUDIO2_TX_BW_TITLE&chco=CC3399&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,30,0|1,AUDIO2_TX_BW_MIN,AUDIO2_TX_BW_MAX,AUDIO2_TX_BW_JUMP&chds=AUDIO2_TX_BW_MIN,AUDIO2_TX_BW_MAX">
+<img src="http://chart.apis.google.com/chart?cht=lc&chd=t:VIDEO2_TX_BW_DATA&&chs=150x70&chtt=VIDEO2_TX_BW_TITLE&chco=CC3399&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,30,0|1,VIDEO2_TX_BW_MIN,VIDEO2_TX_BW_MAX,VIDEO2_TX_BW_JUMP&chds=VIDEO2_TX_BW_MIN,VIDEO2_TX_BW_MAX">
+<img src="http://chart.apis.google.com/chart?cht=lc&chd=t:PRES2_TX_BW_DATA&&chs=150x70&chtt=PRES2_TX_BW_TITLE&chco=CC3399&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,30,0|1,PRES2_TX_BW_MIN,PRES2_TX_BW_MAX,PRES2_TX_BW_JUMP&chds=PRES2_TX_BW_MIN,PRES2_TX_BW_MAX">
+<img src="http://chart.apis.google.com/chart?cht=lc&chd=t:AUDIO2_RX_BW_DATA&&chs=150x70&chtt=AUDIO2_RX_BW_TITLE&chco=CC3399&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,30,0|1,AUDIO2_RX_BW_MIN,AUDIO2_RX_BW_MAX,AUDIO2_RX_BW_JUMP&chds=AUDIO2_RX_BW_MIN,AUDIO2_RX_BW_MAX">
+<img src="http://chart.apis.google.com/chart?cht=lc&chd=t:VIDEO2_RX_BW_DATA&&chs=150x70&chtt=VIDEO2_RX_BW_TITLE&chco=CC3399&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,30,0|1,VIDEO2_RX_BW_MIN,VIDEO2_RX_BW_MAX,VIDEO2_RX_BW_JUMP&chds=VIDEO2_RX_BW_MIN,VIDEO2_RX_BW_MAX">
+<img src="http://chart.apis.google.com/chart?cht=lc&chd=t:PRES2_RX_BW_DATA&&chs=150x70&chtt=PRES2_RX_BW_TITLE&chco=CC3399&chxt=x,y&chxs=0,000000,7,0,lt|1,000000,7,1,lt&chxr=0,1,30,0|1,PRES2_RX_BW_MIN,PRES2_RX_BW_MAX,PRES2_RX_BW_JUMP&chds=PRES2_RX_BW_MIN,PRES2_RX_BW_MAX">
+-->
+
+<div id="SIP" class="w3-container w3-border tab" style="display:none">
+  <div class="canvas" id="canvas2">
+    <div class="sipviewOutput" id="sip1">
+SIP_VIEW_1
+    </div>
+    <div class="sipviewOutput" id="sip2">
+SIP_VIEW_2
+    </div>
+    <div class="sipviewOutput" id="sip3">
+SIP_VIEW_3
+    </div>
+  </div>
+</div>
+
+<script>
+  function openTab(evt, tabName) {
+    var i, x, tablinks;
+    x = document.getElementsByClassName("tab");
+    for (i = 0; i < x.length; i++) {
+        x[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablink");
+    for (i = 0; i < x.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" w3-red", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    evt.currentTarget.className += " w3-red";
+  }
+</script>
+
+</body>
