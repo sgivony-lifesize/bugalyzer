@@ -860,6 +860,13 @@ clean_exit ()
 {
     rm "$TRACE_GREPPED"*
 }
+
+check_dependencies ()
+{
+    dpkg -s jq > /dev/null 2>&1 || error_exit "jq package is missing. Please install it first (Linux: \"sudo apt-get install jq\")"
+}
+
+check_dependencies
 load_config
 
 subcommand=$1
