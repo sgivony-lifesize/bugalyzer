@@ -1,43 +1,80 @@
 #!/bin/bash
 
 SCRIPTPATH=$( cd $(dirname $0) ; pwd -P )
+TRACE_GREPPED="cache"
 
 # set by configuration file
 BUGALIZER_SIPV=""
 BUGALIZER_PRODUCTION_CSS="$SCRIPTPATH/production_css.csv"
+BUGALIZER_CONFIG_FILE="$SCRIPTPATH/bugalyzer.conf"
 DEBUG_MODE=0
+
+create_config ()
+{
+    if ! [[ -f $BUGALIZER_CONFIG_FILE ]]; then
+        touch $BUGALIZER_CONFIG_FILE
+        echo "BUGALIZER_SIPV="  >> $BUGALIZER_CONFIG_FILE
+        echo "DEBUG_MODE=0"     >> $BUGALIZER_CONFIG_FILE
+        echo "Configuartion file created"
+    fi
+}
+
+load_config_property ()
+{
+    local prop=$1
+    grep $prop $BUGALIZER_CONFIG_FILE | awk -F'=' '{print $2}'
+}
 
 load_config ()
 {
-    local config="$SCRIPTPATH/bugalyzer.conf"
+    if ! [[ -f $BUGALIZER_CONFIG_FILE ]]; then
+        create_config
+    fi
 
-    BUGALIZER_SIPV=`grep BUGALIZER_SIPV $config | awk -F'=' '{print $2}'`
-    #BUGALIZER_PRODUCTION_CSS=`grep BUGALIZER_PRODUCTION_CSS $config | awk -F'=' '{print $2}'`
-    DEBUG_MODE=`grep DEBUG_MODE $config | awk -F'=' '{print $2}'`
+    BUGALIZER_SIPV=$(load_config_property "BUGALIZER_SIPV")
+    #BUGALIZER_PRODUCTION_CSS=$(load_config_property "BUGALIZER_PRODUCTION_CSS")
+    DEBUG_MODE=$(load_config_property "DEBUG_MODE")
 
     [[ -z $BUGALIZER_SIPV ]] || [[ $BUGALIZER_SIPV == "" ]] && error_exit "SIP viewer not configured in bugalyzer.conf"
     #[[ -z $BUGALIZER_PRODUCTION_CSS ]] || [[ $BUGALIZER_PRODUCTION_CSS == "" ]] && error_exit "Production CSS table not configured in bugalyzer.conf"
     debug "Debug mode ON"
 }
+
+# in order not to grep for inbound call ID many times, the result is cached in a file and deleted upon exit
+grep_inbound ()
+{
+    local trace_log=$1
+    local inbound=$2
+
+    local grepped="$TRACE_GREPPED"_"$inbound"
+    if [[ ! -f $grepped ]]; then
+        grep 00$inbound $trace_log > $grepped
+    fi
+    cat $grepped
+}
+
 get_outbound_by_inbound ()
 {
     local trace_log=$1
     local inbound=$2
-    grep 00$inbound $trace_log | grep play | grep OUTBOUND | head -1 | awk -F'|' '{ print $7 }'
+
+    grep_inbound $trace_log $inbound | grep play | grep OUTBOUND | head -1 | awk -F'|' '{ print $7 }'
 }
 
 get_caller_by_inbound ()
 {
     local trace_log=$1
     local inbound=$2
-    grep 00$inbound $trace_log | grep "CallState" | head -1 | awk -F'|' '{ print $8 }'
+
+    grep_inbound $trace_log $inbound | grep "CallState" | head -1 | awk -F'|' '{ print $8 }'
 }
 
 get_callee_by_inbound ()
 {
     local trace_log=$1
     local inbound=$2
-    grep 00$inbound $trace_log | grep "CallState" | head -1 | awk -F'|' '{ print $9 }'
+
+    grep_inbound $trace_log $inbound | grep "CallState" | head -1 | awk -F'|' '{ print $9 }'
 }
 
 get_inbound_by_outbound ()
@@ -52,14 +89,15 @@ get_sip_id_by_inbound ()
     local trace_log=$1
     local inbound=$2
 
-    grep $inbound $trace_log | grep call-ID | head -1 | awk -F'|' '{ print $11 }' | awk '{ print $5 }' | sed 's/.$//'
+    grep_inbound $trace_log $inbound | grep call-ID | head -1 | awk -F'|' '{ print $11 }' | awk '{ print $5 }' | sed 's/.$//'
 }
 
 get_next_sip_id_by_inbound ()
 {
     local trace_log=$1
     local inbound=$2
-    local callmgrtag=`grep 00$inbound $trace_log | grep play | grep OUTBOUND | head -1 | awk -F'|' '{ print $8 }' | awk -F';' '{ print $2 }'`
+
+    local callmgrtag=`grep_inbound $trace_log $inbound | grep play | grep OUTBOUND | head -1 | awk -F'|' '{ print $8 }' | awk -F';' '{ print $2 }'`
     [[ ! -z $callmgrtag ]] && grep "From.*$callmgrtag" $trace_log -B2 | head -1 | awk '{print $2}'
 }
 
@@ -95,7 +133,7 @@ get_caller_ip_by_inbound ()
     local trace_log=$1
     local inbound=$2
 
-    local call_id=$(get_sip_id_by_inbound $trace_log $inbound)
+    local call_id=$(get_sip_id_by_inbound $trace_log ${inbound: -5})
     if $(is_leg_web $inbound); then
         grep $call_id $trace_log | head -1 | awk -F'|' '{print $6}' | sed -e 's/^\w*: \ *//' | jq -r '.ip'
     elif $(is_leg_sip $inbound); then
@@ -119,7 +157,7 @@ get_caller_name_by_inbound ()
     local trace_log=$1
     local inbound=$2
 
-    local call_id=$(get_sip_id_by_inbound $trace_log $inbound)
+    local call_id=$(get_sip_id_by_inbound $trace_log ${inbound: -5})
     if [[ ${inbound:0:7} == "WEB_WAN" ]]; then
         grep $call_id $trace_log | head -1 | awk -F'|' '{print $6}' | sed -e 's/^\w*: \ *//' | jq -r '.payload.args.displayName'
     else
@@ -147,7 +185,7 @@ get_callee_name_by_inbound ()
     local trace_log=$1
     local inbound=$2
 
-    grep $inbound $trace_log | grep "CallState: PROCEEDING" | awk -F'|' '{print $9}' | awk -F'@' '{print $1}' | awk -F':' '{printf "%s:%s\n", $2, $3}'
+    grep_inbound $trace_log ${inbound: -5} | grep "CallState: PROCEEDING" | awk -F'|' '{print $9}' | awk -F'@' '{print $1}' | awk -F':' '{printf "%s:%s\n", $2, $3}'
 }
 
 get_caller_client_by_inbound ()
@@ -156,7 +194,7 @@ get_caller_client_by_inbound ()
     local inbound=$2
     local caller_ext=$3
 
-    local call_id=$(get_sip_id_by_inbound $trace_log $inbound)
+    local call_id=$(get_sip_id_by_inbound $trace_log ${inbound: -5})
     if $(is_leg_web $inbound); then
         local line=`grep "WebManager" $trace_log | grep "register" | grep $caller_ext | head -1 | awk -F'|' '{print $6}'`
         local user_agent=`echo ${line:19} | jq -r '.payload.args.userAgent'`
@@ -180,7 +218,7 @@ get_callee_client_by_inbound ()
     local trace_log=$1
     local inbound=$2
 
-    #grep $inbound $trace_log | grep "CallState: PROCEEDING" | awk -F'|' '{print $9}' | awk -F'@' '{print $1}' | awk -F':' '{printf "%s:%s\n", $2, $3}'
+    #grep_inbound $trace_log $inbound | grep "CallState: PROCEEDING" | awk -F'|' '{print $9}' | awk -F'@' '{print $1}' | awk -F':' '{printf "%s:%s\n", $2, $3}'
     echo "TBD"
 }
 
@@ -479,7 +517,7 @@ run_sip_view ()
     local output_no_sip_file=$trace.output_no_msg.log
 
     if [[ ! -f $output_file ]]; then
-        $BUGALIZER_SIPV $trace_file
+        $BUGALIZER_SIPV "$trace_file"
     fi
     local lines_num=`grep $sip_id $output_file | wc -l`
     let lines_num=$lines_num+1
@@ -818,6 +856,10 @@ html_display ()
     firefox $out &
 }
 
+clean_exit ()
+{
+    rm "$TRACE_GREPPED"*
+}
 load_config
 
 subcommand=$1
@@ -845,4 +887,6 @@ case $subcommand in
        fi
        ;;
 esac
+
+clean_exit
 
