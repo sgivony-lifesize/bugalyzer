@@ -58,7 +58,7 @@ get_outbound_by_inbound ()
     local trace_log=$1
     local inbound=$2
 
-    grep_inbound $trace_log $inbound | grep play | grep OUTBOUND | head -1 | awk -F'|' '{ print $7 }'
+    grep_inbound $trace_log $inbound | grep referenceCallID | awk -F'|' '{ print $7 }'
 }
 
 get_caller_by_inbound ()
@@ -107,15 +107,14 @@ get_next_sip_id_by_sip_id ()
     local sipID=$2
     local inbound=`get_inbound_by_sip_id $trace_log $sipID`
     get_next_sip_id_by_inbound ${inbound: -5} $trace_log
-    #local callmgrtag=`grep 00${inbound: -5} $trace_log | grep play | grep OUTBOUND | head -1 | awk -F'|' '{ print $8 }' | awk -F';' '{ print $2 }'`
-    #[[ ! -z $callmgrtag ]] && grep "From.*$callmgrtag" $trace_log -B2 | head -1 | awk '{print $2}'
 }
 
 get_inbound_by_sip_id ()
 {
     local trace_log=$1
     local sipID=$2
-    local inbound=`grep ${sipID:0:-1} $trace_log | grep call-ID | head -1 | awk -F'|' '{ print $7 }'`
+    local inbound="Error"
+    [[ ${#sipID} == 0 ]] || inbound=`grep ${sipID:0:-1} $trace_log | grep call-ID | head -1 | awk -F'|' '{ print $7 }'`
     echo $inbound
 }
 
@@ -160,9 +159,14 @@ get_caller_name_by_inbound ()
     local call_id=$(get_sip_id_by_inbound $trace_log ${inbound: -5})
     if [[ ${inbound:0:7} == "WEB_WAN" ]]; then
         grep $call_id $trace_log | head -1 | awk -F'|' '{print $6}' | sed -e 's/^\w*: \ *//' | jq -r '.payload.args.displayName'
-    else
+    elif [[ ${inbound:0:3} == "SIP" ]]; then
         local name=`grep $call_id $trace_log -A20 | head -20 | grep From | awk '{printf "%s %s\n", $2, $3}'`
         echo ${name:1:-1}   # remove quotes from beginning and end
+    elif [[ ${inbound:0:4} == "H323" ]]; then
+        # TBD
+        echo "H323_TBD"
+    else
+        echo "UNKNOWN"
     fi
 }
 
@@ -629,19 +633,22 @@ draw_html_stats_four ()
     debug "================================"
 
     # extract the data points
-    local data_ib_rx1=`grep $call_handler_id_ib1 $stats_file1 | awk -F'|' -v col="$index_medium1" '{print $col}' | awk -F',' -v col="$index_bw_packets_loss1" '{print $col}'`
-    local data_ob_tx1=`grep $call_handler_id_ob1 $stats_file1 | awk -F'|' -v col="$index_medium2" '{print $col}' | awk -F',' -v col="$index_bw_packets_loss1" '{print $col}'`
-    local data_ib_rx2=`grep $call_handler_id_ib2 $stats_file2 | awk -F'|' -v col="$index_medium3" '{print $col}' | awk -F',' -v col="$index_bw_packets_loss1" '{print $col}'`
-    if ! [[ -z $call_handler_id_ob2 ]]; then    # sometimes second OB leg doesn't exist
-        local data_ob_tx2=`grep $call_handler_id_ob2 $stats_file2 | awk -F'|' -v col="$index_medium4" '{print $col}' | awk -F',' -v col="$index_bw_packets_loss1" '{print $col}'`
-    fi
+    local data_ib_rx1
+    local data_ob_tx1
+    local data_ib_rx2
+    local data_ob_tx2
+    data_ib_rx1=`grep $call_handler_id_ib1 $stats_file1 | awk -F'|' -v col="$index_medium1" '{print $col}' | awk -F',' -v col="$index_bw_packets_loss1" '{print $col}'`
+    # sometimes a leg doesn't exist
+    [[ -z $call_handler_id_ob1 ]] || data_ob_tx1=`grep $call_handler_id_ob1 $stats_file1 | awk -F'|' -v col="$index_medium2" '{print $col}' | awk -F',' -v col="$index_bw_packets_loss1" '{print $col}'`
+    [[ -z $call_handler_id_ib2 ]] || data_ib_rx2=`grep $call_handler_id_ib2 $stats_file2 | awk -F'|' -v col="$index_medium3" '{print $col}' | awk -F',' -v col="$index_bw_packets_loss1" '{print $col}'`
+    [[ -z $call_handler_id_ob2 ]] || data_ob_tx2=`grep $call_handler_id_ob2 $stats_file2 | awk -F'|' -v col="$index_medium4" '{print $col}' | awk -F',' -v col="$index_bw_packets_loss1" '{print $col}'`
 
     # remove first 0
     [[ ${data_ib_rx1:0:1} == 0 ]] && data_ib_rx1=${data_ib_rx1:2}
     [[ ${data_ob_tx1:0:1} == 0 ]] && data_ob_tx1=${data_ob_tx1:2}
     [[ ${data_ib_rx2:0:1} == 0 ]] && data_ib_rx2=${data_ib_rx2:2}
     [[ ${data_ob_tx2:0:1} == 0 ]] && data_ob_tx2=${data_ob_tx2:2}
-    
+
     local data_ib_rx1_num=`echo "$data_ib_rx1" | wc -l`
     local data_ob_tx1_num=`echo "$data_ob_tx1" | wc -l`
     local data_ib_rx2_num=`echo "$data_ib_rx2" | wc -l`
@@ -812,6 +819,18 @@ draw_html ()
         caller_name=`expr "$caller_name" : '\(.*twilio\.com\)'`
     fi
 
+    local display="inline"
+    sed -i -e "s/CALLER_DISPLAY/$display/g" $out
+    sed -i -e "s/LINK1_DISPLAY/$display/g" $out
+    sed -i -e "s/NODE1_DISPLAY/$display/g" $out
+    if [[ $inbound2 == "Error" ]]; then
+        display="none"
+    fi
+    sed -i -e "s/LINK2_DISPLAY/$display/g" $out
+    sed -i -e "s/NODE2_DISPLAY/$display/g" $out
+    sed -i -e "s/LINK3_DISPLAY/$display/g" $out
+    sed -i -e "s/CALLEE_DISPLAY/$display/g" $out
+
     sed -i -e "s/CALLER_EXTENSION/$caller/g" $out
     sed -i -e "s/CALLEE_EXTENSION/$callee/g" $out
     sed -i -e "s/CALLER_NAME/$caller_name/g" $out
@@ -858,7 +877,7 @@ html_display ()
 
 clean_exit ()
 {
-    rm "$TRACE_GREPPED"*
+    rm "$TRACE_GREPPED"* > /dev/null 2>&1
 }
 
 check_dependencies ()

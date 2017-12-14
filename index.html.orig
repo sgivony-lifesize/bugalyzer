@@ -18,7 +18,7 @@ STYLE_FROM_CSS_FILE
       <div class="field" id="caller_ip">CALLER_IP</div>
     </div>
   </div>
-  <div class="link tooltip" id="node1Link">CALL_ID_1_12DIGITS<span class="tooltiptext">CALL_ID_1_TOOLTIP</span></div>
+  <div class="link tooltip" id="link1">CALL_ID_1_12DIGITS<span class="tooltiptext">CALL_ID_1_TOOLTIP</span></div>
   <div class="entity" id="node1">
     <div class="field title">NODE1_NAME</div>
     <div class="content">
@@ -37,7 +37,7 @@ STYLE_FROM_CSS_FILE
       </div>
     </div>
   </div>
-  <div class="link tooltip" id="nodesLink">CALL_ID_2_12DIGITS<span class="tooltiptext">CALL_ID_2_TOOLTIP</span></div>
+  <div class="link tooltip" id="link2">CALL_ID_2_12DIGITS<span class="tooltiptext">CALL_ID_2_TOOLTIP</span></div>
   <div class="entity" id="node2">
     <div class="field title">NODE2_NAME</div>
     <div class="content">
@@ -56,7 +56,7 @@ STYLE_FROM_CSS_FILE
       </div>
     </div>
   </div>
-  <div class="link tooltip" id="node1Link">CALL_ID_3_12DIGITS<span class="tooltiptext">CALL_ID_3_TOOLTIP</span></div>
+  <div class="link tooltip" id="link3">CALL_ID_3_12DIGITS<span class="tooltiptext">CALL_ID_3_TOOLTIP</span></div>
   <div class="entity" id="callee">
     <div class="field title">CALLEE_NAME</div>
     <div class="content">

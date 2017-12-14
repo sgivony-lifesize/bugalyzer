@@ -4,6 +4,27 @@
   float: left;
   width: 100%;
 }
+#caller {
+  display: CALLER_DISPLAY;
+}
+#link1 {
+  display: LINK1_DISPLAY;
+}
+#node1 {
+  display: NODE1_DISPLAY;
+}
+#link2 {
+  display: LINK2_DISPLAY;
+}
+#node2 {
+  display: NODE2_DISPLAY;
+}
+#link3 {
+  display: LINK3_DISPLAY;
+}
+#callee {
+  display: CALLEE_DISPLAY;
+}
 .graph {
   float: left;
   padding: 10px;
