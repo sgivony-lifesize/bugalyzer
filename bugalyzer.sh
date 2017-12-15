@@ -5,7 +5,7 @@ TRACE_GREPPED="cache"
 
 # set by configuration file
 BUGALIZER_SIPV=""
-BUGALIZER_PRODUCTION_CSS="$SCRIPTPATH/production_css.csv"
+BUGALIZER_CSS_NODES_MAP="$SCRIPTPATH/css_nodes.csv"
 BUGALIZER_CONFIG_FILE="$SCRIPTPATH/bugalyzer.conf"
 DEBUG_MODE=0
 
@@ -13,8 +13,9 @@ create_config ()
 {
     if ! [[ -f $BUGALIZER_CONFIG_FILE ]]; then
         touch $BUGALIZER_CONFIG_FILE
-        echo "BUGALIZER_SIPV="  >> $BUGALIZER_CONFIG_FILE
-        echo "DEBUG_MODE=0"     >> $BUGALIZER_CONFIG_FILE
+        echo "BUGALIZER_SIPV="                                  >> $BUGALIZER_CONFIG_FILE
+        echo "BUGALIZER_CSS_NODES_MAP=$BUGALIZER_CSS_NODES_MAP" >> $BUGALIZER_CONFIG_FILE
+        echo "DEBUG_MODE=0"                                     >> $BUGALIZER_CONFIG_FILE
         echo "Configuartion file created"
     fi
 }
@@ -32,11 +33,11 @@ load_config ()
     fi
 
     BUGALIZER_SIPV=$(load_config_property "BUGALIZER_SIPV")
-    #BUGALIZER_PRODUCTION_CSS=$(load_config_property "BUGALIZER_PRODUCTION_CSS")
+    BUGALIZER_CSS_NODES_MAP=$(load_config_property "BUGALIZER_CSS_NODES_MAP")
     DEBUG_MODE=$(load_config_property "DEBUG_MODE")
 
-    [[ -z $BUGALIZER_SIPV ]] || [[ $BUGALIZER_SIPV == "" ]] && error_exit "SIP viewer not configured in bugalyzer.conf"
-    #[[ -z $BUGALIZER_PRODUCTION_CSS ]] || [[ $BUGALIZER_PRODUCTION_CSS == "" ]] && error_exit "Production CSS table not configured in bugalyzer.conf"
+    [[ -z $BUGALIZER_SIPV ]]          || [[ $BUGALIZER_SIPV == "" ]]          && error_exit "SIP viewer not configured in bugalyzer.conf"
+    [[ -z $BUGALIZER_CSS_NODES_MAP ]] || [[ $BUGALIZER_CSS_NODES_MAP == "" ]] && error_exit "CSS nodes map not configured in bugalyzer.conf"
     debug "Debug mode ON"
 }
 
@@ -151,6 +152,7 @@ get_callee_ip_by_sip_id ()
     echo "TBD"
 }
 
+# assumes FULL inbound name
 get_caller_name_by_inbound ()
 {
     local trace_log=$1
@@ -362,12 +364,12 @@ get_one ()
     # find nodes IPs and names
     local node1_id=${folder1:0:4}
     local node2_id=${folder2:0:4}
-    local node1_ip_ext=`grep "$node1_id" "$BUGALIZER_PRODUCTION_CSS" | awk -F',' '{print $4}'`
-    local node1_ip_int=`grep "$node1_id" "$BUGALIZER_PRODUCTION_CSS" | awk -F',' '{print $5}'`
-    local node2_ip_ext=`grep "$node2_id" "$BUGALIZER_PRODUCTION_CSS" | awk -F',' '{print $4}'`
-    local node2_ip_int=`grep "$node2_id" "$BUGALIZER_PRODUCTION_CSS" | awk -F',' '{print $5}'`
-    local node1_name=`grep "$node1_id"   "$BUGALIZER_PRODUCTION_CSS" | awk -F',' '{print $3}'`
-    local node2_name=`grep "$node2_id"   "$BUGALIZER_PRODUCTION_CSS" | awk -F',' '{print $3}'`
+    local node1_ip_ext=`grep "$node1_id" "$BUGALIZER_CSS_NODES_MAP" | awk -F',' '{print $4}'`
+    local node1_ip_int=`grep "$node1_id" "$BUGALIZER_CSS_NODES_MAP" | awk -F',' '{print $5}'`
+    local node2_ip_ext=`grep "$node2_id" "$BUGALIZER_CSS_NODES_MAP" | awk -F',' '{print $4}'`
+    local node2_ip_int=`grep "$node2_id" "$BUGALIZER_CSS_NODES_MAP" | awk -F',' '{print $5}'`
+    local node1_name=`grep "$node1_id"   "$BUGALIZER_CSS_NODES_MAP" | awk -F',' '{print $3}'`
+    local node2_name=`grep "$node2_id"   "$BUGALIZER_CSS_NODES_MAP" | awk -F',' '{print $3}'`
     node1_name="$node1_name   [$node1_id]"
     node2_name="$node2_name   [$node2_id]"
     #local node1_name=$(get_node_name "$folder1")
@@ -516,9 +518,9 @@ run_sip_view ()
     local sip_id=$2
 
     trace=${trace_file:0:-4}   # remove extension
-    local siptrace_file=$trace.siptrace.log
-    local output_file=$trace.output.log
-    local output_no_sip_file=$trace.output_no_msg.log
+    local siptrace_file=$trace.sipv.siptrace.log
+    local output_file=$trace.sipv.output.log
+    local output_no_sip_file=$trace.sipv.output_no_msg.log
 
     if [[ ! -f $output_file ]]; then
         $BUGALIZER_SIPV "$trace_file"
@@ -885,12 +887,36 @@ check_dependencies ()
     dpkg -s jq > /dev/null 2>&1 || error_exit "jq package is missing. Please install it first (Linux: \"sudo apt-get install jq\")"
 }
 
+usage ()
+{
+    echo "Usage: `basename $0` <command> <args>"
+    echo "Commands:"
+    echo "  -o|--outbound-by-inbound <CallTrace> <inbound>                Given inbound call-handler id, get outbound call-handler id"
+    echo "  -r|--caller-by-inbound <CallTrace> <inbound>                  Given inbound call-handler id, get caller"
+    #echo "  -t|--caller-name-by-inbound <CallTrace> <inbound>             Given inbound call-handler id, get caller name"
+    echo "  -e|--callee-by-inbound <CallTrace> <inbound>                  Given inbound call-handler id, get callee"
+    echo "  -i|--inbound-by-outbound <CallTrace> <outbound>               Given outbound call-handler id, get inbound call-handler id"
+    echo "  -s|--sip-by-inbound <CallTrace> <inbound>                     Given inbound call-handler id, get SIP call-id (or just call-id)"
+    echo "  -n|--next-sip-by-inbound <CallTrace> <inbound>                Given inbound call-handler id, get next SIP call-id (or just call-id)"
+    echo "  -x|--inbound-by-sip <CallTrace> <sip-id>                      Given SIP call-id (or just call-id), get inbound call-handler id"
+    echo "  -y|--outbound-by-sip <CallTrace> <sip-id>                     Given SIP call-id (or just call-id), get outbound call-handler id"
+    echo "  -z|--nextsip-by-sip <CallTrace> <sip-id>                      Given SIP call-id (or just call-id), get next SIP call-id (or just call-id)"
+    echo "  -m|--mp-by-outbound <Transactions log> <outbound>             Given outbound call-handler id, get MP"
+    echo "  -a|--all-call-handlers-ids <CallTrace>                        Get all inbound call-handlers ids"
+    echo "  -b|--all-call-handlers-ids-of-caller <CallTrace> <caller-ext>             Given caller extension, get all inbound call-handlers ids"
+    echo "  -q|--all <node1-folder> <node2-folder> <time-rounded> <caller-extension>  Given two folders (*), each containing at least CallTrace and CallStats
+                                                                            logs, time (rounded to the hour only) and caller extension, this
+                                                                            command will output all relevant info for this call, both textually
+                                                                            and in HTML file.
+                                                                            (*) Important: folders' names must begin with 4 letters node ID."
+}
+
 check_dependencies
 load_config
 
 subcommand=$1
 case $subcommand in
-    "" | "-h" | "--help")           sub_help ;;
+    "" | "-h" | "--help")           usage ;;
     -o|--outbound-by-inbound)       shift && get_outbound_by_inbound $@    ; shift ;;
     -r|--caller-by-inbound)         shift && get_caller_by_inbound $@      ; shift ;;
     -t|--caller-name-by-inbound)    shift && get_caller_name_by_inbound $@ ; shift ;;
@@ -904,13 +930,10 @@ case $subcommand in
     -m|--mp-by-outbound)            shift && get_mp_by_outbound $@         ; shift ;;
     -a|--all-call-handlers-ids)     shift && get_all_call_handlers_ids $@  ; shift ;;
     -b|--all-call-handlers-ids-of-caller) shift && get_all_call_handlers_ids_of_caller $@  ; shift ;;
-    -q|--all)                   shift && get_all $@                    ; shift ;;
-    *) get_${subcommand} $@
-       if [ $? = 127 ]; then
-           echo "Error: '$subcommand' is not a known subcommand." >&2
-           echo "       Run '$ProgName --help' for a list of known subcommands." >&2
+    -q|--all)                       shift && get_all $@                    ; shift ;;
+    *)     echo "Error: '$subcommand' is not a known command." >&2
+           usage >&2
            exit 1
-       fi
        ;;
 esac
 
