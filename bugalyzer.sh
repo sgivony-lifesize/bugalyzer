@@ -209,7 +209,8 @@ get_caller_client_by_inbound ()
             echo "$user_agent" | awk '{printf "%s %s\n", $10, $12}'
         else
             # web client
-            echo "$user_agent" | awk '{printf "%s\n", $10}'
+            echo "Lifesize Web Client"
+            #echo "$user_agent" | awk '{printf "%s\n", $10}'
         fi
     elif $(is_leg_sip $inbound); then
         local client=`grep $call_id $trace_log -A30 | head -30 | grep User-Agent`
